@@ -1,16 +1,68 @@
-# React + Vite
+# Portfolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal portfolio site built with React, Vite, and Tailwind CSS — showcasing my projects, skills, and experience as a full-stack developer.
 
-Currently, two official plugins are available:
+**🔗 Live site:** [my-portfolio-pink-mu-67.vercel.app](https://my-portfolio-pink-mu-67.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## About
 
-## React Compiler
+I'm Phone Myat Paing, a Junior Full-Stack Developer (React + .NET) based in Bangkok, Thailand, currently finishing a B.Sc. in Information Technology at Stamford International University. This site highlights my internship experience, academic projects, and technical skill set.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **React 19** — UI library
+- **Vite** — build tool and dev server
+- **Tailwind CSS 4** — styling
+- **Lucide React** — icons
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Features
+
+- Responsive, mobile-friendly layout
+- Scroll-triggered section reveals
+- Animated typing effect in the hero
+- Project showcase with tech stack tags
+- Contact section with direct email and phone links
+
+## Getting Started
+
+Clone the repo and run it locally:
+
+```bash
+git clone https://github.com/PhPaing/my-portfolio.git
+cd my-portfolio
+npm install
+npm run dev
+```
+
+The site will be available at `http://localhost:5173`.
+
+### Build for production
+
+```bash
+npm run build
+```
+
+Outputs a production-ready build to the `dist/` folder.
+
+## Project Structure
+
+```
+my-portfolio/
+├── public/
+├── src/
+│   ├── assets/
+│   │   └── profile.jpg
+│   ├── App.jsx
+│   ├── Portfolio.jsx
+│   ├── index.css
+│   └── main.jsx
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+## Contact
+
+- **Email:** phonemyatp27@gmail.com
+- **Phone:** +66 95 819 9409
+- **GitHub:** [@PhPaing](https://github.com/PhPaing)
