@@ -2,7 +2,7 @@
 
 A personal portfolio site built with React, Vite, and Tailwind CSS — showcasing my projects, skills, and experience as a full-stack developer.
 
-**🔗 Live site:** [my-portfolio-pink-mu-67.vercel.app](https://my-portfolio-pink-mu-67.vercel.app/)
+**🔗 Live site:** [my-portfolio-pink-mu-67.vercel.app](https://phonemyatpaing.vercel.app/)
 
 ## About
 
