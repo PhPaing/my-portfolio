@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import portrait from "./assets/profile.png";
+import resumePdf from "./assets/Phone_Myat_Paing_Resume.pdf";
 import {
   Mail,
   MessageCircle,
@@ -9,7 +10,6 @@ import {
   ArrowUpRight,
   Sun,
   Moon,
-  Coffee,
   MapPin,
   Briefcase,
   AtSign,
@@ -60,7 +60,7 @@ const FONT_BODY = "'Inter', sans-serif";
 const FONT_MONO = "'IBM Plex Mono', monospace";
 
 const PHOTO_SRC = portrait;
-const RESUME_SRC = "assets/Phone_Myat_Paing_Resume.pdf";
+const RESUME_SRC = resumePdf;
 
 /* ============================================================
    SHARED
@@ -185,7 +185,7 @@ function Nav({ t, isDark, setIsDark }) {
 /* ============================================================
    HERO
    ============================================================ */
-const ROLES = ["Full-Stack Developer"];
+const ROLES = ["Junior Full-Stack Developer"];
 
 function Hero({ t }) {
   const [idx, setIdx] = useState(0);
@@ -195,9 +195,9 @@ function Hero({ t }) {
   }, []);
 
   const INFO = [
-    { icon: <Coffee size={16} />, text: "fueled by Burmese tea & coffee" },
+    { icon: <Briefcase size={16} />, text: "React · TypeScript · ASP.NET Core · SQL Server" },
     { icon: <MapPin size={16} />, text: "based in Bangkok, Thailand" },
-    { icon: <Briefcase size={16} />, text: "ex-Intern at Bangkok Glass PCL" },
+    { icon: <GraduationCap size={16} />, text: "B.Sc. IT (Software Engineering), Stamford" },
     { icon: <AtSign size={16} />, text: "phonemyatp27@gmail.com" },
   ];
 
@@ -291,11 +291,8 @@ function Hero({ t }) {
             <SocialIcon href="https://www.linkedin.com/in/phone-myat-paing-572707386/" label="LinkedIn" t={t}>
               <FaLinkedin size={18} />
             </SocialIcon>
-            <SocialIcon href="https://wa.me/dave2719" label="WhatsApp" t={t}>
+            <SocialIcon href="https://wa.me/66958199409" label="WhatsApp" t={t}>
               <MessageCircle size={18} />
-            </SocialIcon>
-            <SocialIcon href="https://line.me/ti/p/pdavemp9" label="LINE" t={t}>
-              <Send size={18} />
             </SocialIcon>
             <SocialIcon href="mailto:phonemyatp27@gmail.com" label="Email" t={t}>
               <Mail size={18} />
@@ -340,15 +337,16 @@ function About({ t }) {
             A little about my work
           </h2>
           <p className="text-[15.5px] leading-relaxed mb-4 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-            I'm a Software Engineering graduate from Stamford International University with
-            hands-on experience as a Software Developer Intern at Bangkok Glass Public Company
-            Limited, building React.js interfaces on top of ASP.NET Core REST APIs.
+            I'm a junior full-stack developer with a B.Sc. in Information Technology (Software
+            Engineering) from Stamford International University. I completed a five-month
+            software developer internship at Bangkok Glass Public Company Limited, building
+            React.js and TypeScript interfaces for a customer-facing website and integrating them
+            with ASP.NET Core REST APIs.
           </p>
           <p className="text-[15.5px] leading-relaxed mb-6 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-            I'm comfortable across the stack — C# and SQL Server on the backend, React.js and
-            Tailwind CSS on the front — and I validate every endpoint with Postman and Swagger UI
-            before it ships. I thrive in Agile teams and I'm now looking for a full-time role in
-            Thailand or Singapore where I can keep growing as a developer.
+            I work across the stack: C#, ASP.NET Core and SQL Server on the back end, React.js and
+            Tailwind CSS on the front end. I test endpoints with Postman and Swagger UI and keep my
+            work in Git and GitHub. I'm looking for a junior full-stack, .NET or React role in Bangkok.
           </p>
           <div className="flex flex-wrap gap-2">
             <Pill t={t}>English — Fluent</Pill>
@@ -365,11 +363,11 @@ function About({ t }) {
             Snapshot
           </div>
           {[
-            ["Location", "Suan Luang, Bangkok, TH"],
-            ["Nationality", "Myanmar"],
+            ["Location", "Bangkok, Thailand"],
+            ["Role", "Junior Full-Stack Developer"],
             ["Availability", "Immediate"],
-            ["Expected Salary", "Negotiable"],
-            ["Open to", "Thailand · Singapore"],
+            ["Main stack", "React · ASP.NET Core · SQL Server"],
+            ["Languages", "English (fluent) · Burmese (native)"],
           ].map(([k, v]) => (
             <div key={k} className="flex items-baseline justify-between gap-4 py-3 transition-colors duration-500" style={{ borderBottom: `1px solid ${t.line}` }}>
               <span className="text-[13px] transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textFaint }}>
@@ -390,14 +388,12 @@ function About({ t }) {
    EXPERIENCE
    ============================================================ */
 const DUTIES = [
-  "Developed 10+ reusable React.js components with Tailwind CSS, improving UI consistency",
-  "Built 5+ responsive web pages/features using HTML5, CSS3 and React.js",
-  "Integrated React.js frontends with multiple ASP.NET Core REST API endpoints",
-  "Validated and debugged REST API endpoints using Postman and Swagger UI",
-  "Collaborated with backend developers to implement and troubleshoot integrations",
-  "Leveraged Git/GitHub for version control and collaborative development",
-  "Identified and resolved frontend bugs to improve performance and UX",
-  "Followed coding standards and Agile practices while shipping features",
+  "Built 10+ reusable React.js and TypeScript components with Tailwind CSS, used across 7 pages of the redesigned customer-facing website",
+  "Implemented client-side routing with React Router and responsive layouts using Vite",
+  "Built the front end for an AI chat assistant that connects to an AI chatbot service through its API",
+  "Integrated the front end with ASP.NET Core REST APIs, handling JSON requests and responses",
+  "Tested REST endpoints with Postman and Swagger UI and reported integration and data issues to backend developers",
+  "Used Git/GitHub for version control and validated features before deployment",
 ];
 
 function Experience({ t }) {
@@ -441,21 +437,21 @@ function Experience({ t }) {
    ============================================================ */
 const PROJECTS = [
   {
+    title: "MovieTracker",
+    desc: "Full-stack movie watchlist: Web API with JWT authentication and EF Core migrations, a background service importing from the TMDB API every 24 hours, and a React front end with search, genre filter and server-side pagination.",
+    tags: ["ASP.NET Core", "C#", "SQL Server", "EF Core", "React.js", "JWT"],
+    href: "https://github.com/PhPaing/Movie-Tracker",
+  },
+  {
     title: "BG Pathum United Football Club Website",
-    desc: "Responsive football club site with match schedules, news, standings and video, integrating the YouTube and Football Data APIs.",
-    tags: ["React.js", "TypeScript", "Tailwind", "ASP.NET Core", "SQL Server"],
+    desc: "Responsive club website with match schedules, news, standings and video, using reusable React and TypeScript components and the YouTube and Football Data APIs.",
+    tags: ["React.js", "TypeScript", "Tailwind CSS", "REST APIs"],
     href: "https://github.com/PhPaing/bg-pathum-united-website",
   },
   {
-    title: "ATM Management System",
-    desc: "Console-based ATM app covering balance inquiry, deposits, withdrawals and transfers, with password validation and account lockout.",
-    tags: ["C#", ".NET", "OOP"],
-    href: "https://github.com/PhPaing/ATM-Management-System",
-  },
-  {
     title: "Hot Coffee Delivery App",
-    desc: "Mobile ordering and delivery app with authentication, menu browsing, cart, checkout and order management.",
-    tags: ["Java", "Android Studio", "SQLite/MySQL"],
+    desc: "Android coffee ordering app with user authentication, menu browsing, cart and checkout, and order management on a SQLite/MySQL database.",
+    tags: ["Java", "Android Studio", "XML", "SQLite/MySQL"],
     href: "https://github.com/PhPaing/Hot-Coffee-Delivery-App",
   },
 ];
@@ -512,13 +508,13 @@ function Projects({ t }) {
    SKILLS + EDUCATION
    ============================================================ */
 const SKILL_GROUPS = [
-  { key: "Languages", values: ["JavaScript", "TypeScript", "C#", "Python", "Java"] },
+  { key: "Languages", values: ["TypeScript", "JavaScript", "C#", "Java"] },
   { key: "Frontend", values: ["React.js", "HTML5", "CSS3", "Tailwind CSS"] },
-  { key: "Backend", values: ["ASP.NET Core", "REST APIs", "JSON"] },
-  { key: "Database", values: ["SQL Server", "MySQL"] },
+  { key: "API & Backend", values: ["ASP.NET Core Web API", "EF Core", "REST APIs", "JWT", "JSON"] },
+  { key: "Database", values: ["SQL Server", "MySQL", "SQLite"] },
   { key: "Tools", values: ["Git", "GitHub", "Postman", "Swagger UI", "Visual Studio", "VS Code"] },
 ];
-const EXPERTISE = ["Problem Solving", "Team Collaboration", "Communication", "Analytical Thinking", "Time Management", "Attention to Detail", "Adaptability", "Fast Learner"];
+const EXPERTISE = ["REST API integration", "Relational database design", "Responsive UI", "API testing", "Client-side routing"];
 
 function Skills({ t }) {
   return (
@@ -588,7 +584,6 @@ function Education({ t }) {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Pill t={t}>HND Computing Foundation — YIU</Pill>
         <Pill t={t}>Responsive Web Design — freeCodeCamp</Pill>
         <Pill t={t}>JS Algorithms &amp; Data Structures — freeCodeCamp</Pill>
         <Pill t={t}>Cloud-Based Web Development — Stamford</Pill>
@@ -612,8 +607,8 @@ function Contact({ t }) {
   const CONTACT_ITEMS = [
     { label: "Email", value: "phonemyatp27@gmail.com", href: "mailto:phonemyatp27@gmail.com", icon: <Mail size={17} /> },
     { label: "WhatsApp", value: "+66 95 819 9409", href: "https://wa.me/66958199409", icon: <MessageCircle size={17} /> },
-    { label: "LINE", value: "@phonemyatp27", href: "https://line.me/ti/p/~phonemyatp27", icon: <Send size={17} /> },
-    { label: "LinkedIn", value: "/in/phone-myat-paing", href: "https://www.linkedin.com/in/phone-myat-paing-572707386/", icon: <FaLinkedin size={17} /> },
+    { label: "LINE", value: "+66 95 819 9409 (LINE)", href: "tel:+66958199409", icon: <Send size={17} /> },
+    { label: "LinkedIn", value: "/in/phone-myat-paing-572707386", href: "https://www.linkedin.com/in/phone-myat-paing-572707386/", icon: <FaLinkedin size={17} /> },
   ];
 
   return (
@@ -625,7 +620,7 @@ function Contact({ t }) {
             Let's build something.
           </h2>
           <p className="text-[15px] leading-relaxed mb-8 max-w-md transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-            Open to full-stack developer roles in Thailand and Singapore, available to start
+            Open to junior full-stack, .NET and React developer roles in Bangkok, available to start
             immediately. Reach out on whichever channel is easiest — I reply fast.
           </p>
 
