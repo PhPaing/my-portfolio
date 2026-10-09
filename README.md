@@ -6,7 +6,7 @@ A personal portfolio site built with React, Vite, and Tailwind CSS — showcasin
 
 ## About
 
-I'm Phone Myat Paing, a Junior Full-Stack Developer (React + .NET) based in Bangkok, Thailand, currently finishing a B.Sc. in Information Technology at Stamford International University. This site highlights my internship experience, academic projects, and technical skill set.
+I'm Phone Myat Paing, a Full-Stack Developer (React + .NET) based in Bangkok, Thailand, currently finishing a B.Sc. in Information Technology at Stamford International University. This site highlights my internship experience, academic projects, and technical skill set.
 
 ## Tech Stack
 
