@@ -185,7 +185,7 @@ function Nav({ t, isDark, setIsDark }) {
 /* ============================================================
    HERO
    ============================================================ */
-const ROLES = ["Junior Full-Stack Developer"];
+const ROLES = ["Full-Stack Developer"];
 
 function Hero({ t }) {
   const [idx, setIdx] = useState(0);
@@ -337,7 +337,7 @@ function About({ t }) {
             A little about my work
           </h2>
           <p className="text-[15.5px] leading-relaxed mb-4 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-            I'm a junior full-stack developer with a B.Sc. in Information Technology (Software
+            I'm a full-stack developer with a B.Sc. in Information Technology (Software
             Engineering) from Stamford International University. I completed a five-month
             software developer internship at Bangkok Glass Public Company Limited, building
             React.js and TypeScript interfaces for a customer-facing website and integrating them
@@ -346,7 +346,7 @@ function About({ t }) {
           <p className="text-[15.5px] leading-relaxed mb-6 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
             I work across the stack: C#, ASP.NET Core and SQL Server on the back end, React.js and
             Tailwind CSS on the front end. I test endpoints with Postman and Swagger UI and keep my
-            work in Git and GitHub. I'm looking for a junior full-stack, .NET or React role in Bangkok.
+            work in Git and GitHub. I'm seeking for a entry-level full-stack, .NET or React role in Bangkok.
           </p>
           <div className="flex flex-wrap gap-2">
             <Pill t={t}>English — Fluent</Pill>
@@ -364,7 +364,7 @@ function About({ t }) {
           </div>
           {[
             ["Location", "Bangkok, Thailand"],
-            ["Role", "Junior Full-Stack Developer"],
+            ["Role", "Full-Stack Developer"],
             ["Availability", "Immediate"],
             ["Main stack", "React · ASP.NET Core · SQL Server"],
             ["Languages", "English (fluent) · Burmese (native)"],
