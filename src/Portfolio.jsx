@@ -437,6 +437,13 @@ function Experience({ t }) {
    ============================================================ */
 const PROJECTS = [
   {
+    title: "CondoQueue",
+    desc: "Bangkok condo repair and bill platform with end-to-end ticketing (resident reports, juristic assigns, technician closes), a PromptPay QR mock billing flow, a role-based dashboard, and a mobile-first dark mode UI with a Thai/English toggle.",
+    tags: ["React.js", "TypeScript", "Next.js", "Tailwind CSS", "REST API"],
+    href: "https://github.com/PhPaing/CondoQueue",
+    live: "https://condoqueue.netlify.app",
+  },
+  {
     title: "MovieTracker",
     desc: "Full-stack movie watchlist: Web API with JWT authentication and EF Core migrations, a background service importing from the TMDB API every 24 hours, and a React front end with search, genre filter and server-side pagination.",
     tags: ["ASP.NET Core", "C#", "SQL Server", "EF Core", "React.js", "JWT"],
@@ -447,12 +454,7 @@ const PROJECTS = [
     desc: "Responsive club website with match schedules, news, standings and video, using reusable React and TypeScript components and the YouTube and Football Data APIs.",
     tags: ["React.js", "TypeScript", "Tailwind CSS", "REST APIs"],
     href: "https://github.com/PhPaing/bg-pathum-united-website",
-  },
-  {
-    title: "Hot Coffee Delivery App",
-    desc: "Android coffee ordering app with user authentication, menu browsing, cart and checkout, and order management on a SQLite/MySQL database.",
-    tags: ["Java", "Android Studio", "XML", "SQLite/MySQL"],
-    href: "https://github.com/PhPaing/Hot-Coffee-Delivery-App",
+    live: "https://bg-pathum-united-website.vercel.app",
   },
 ];
 
@@ -466,11 +468,8 @@ function Projects({ t }) {
 
       <div className="grid md:grid-cols-3 gap-5">
         {PROJECTS.map((p) => (
-          <a
+          <div
             key={p.title}
-            href={p.href}
-            target="_blank"
-            rel="noopener noreferrer"
             className="group rounded-2xl p-6 flex flex-col transition-all duration-300 hover:-translate-y-1.5"
             style={{ backgroundColor: t.panel, border: `1px solid ${t.line}` }}
           >
@@ -493,11 +492,19 @@ function Projects({ t }) {
                 </span>
               ))}
             </div>
-            <div className="flex items-center gap-1.5 text-[13px] font-semibold mt-auto" style={{ fontFamily: FONT_BODY, color: ACCENT }}>
-              View project
-              <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <div className="flex items-center gap-5 text-[13px] font-semibold mt-auto" style={{ fontFamily: FONT_BODY, color: ACCENT }}>
+              {p.live && (
+                <a href={p.live} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:underline">
+                  Live demo
+                  <ArrowUpRight size={14} />
+                </a>
+              )}
+              <a href={p.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:underline">
+                {p.live ? "View code" : "View project"}
+                <ArrowUpRight size={14} />
+              </a>
             </div>
-          </a>
+          </div>
         ))}
       </div>
     </Section>
