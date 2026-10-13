@@ -437,11 +437,11 @@ function Experience({ t }) {
    ============================================================ */
 const PROJECTS = [
   {
-    title: "CondoQueue",
-    desc: "Bangkok condo repair and bill platform with end-to-end ticketing (resident reports, juristic assigns, technician closes), a PromptPay QR mock billing flow, a role-based dashboard, and a mobile-first dark mode UI with a Thai/English toggle.",
-    tags: ["React.js", "TypeScript", "Next.js", "Tailwind CSS", "REST API"],
-    href: "https://github.com/PhPaing/CondoQueue",
-    live: "https://condoqueue.netlify.app",
+   title: "RepairQueue",
+    desc: "Bilingual (Thai/English) condo maintenance tracker. Residents submit repair requests by room and issue type and follow their live queue position, while an admin dashboard assigns technicians and updates ticket status, with simulated LINE notifications.",
+    tags: ["React.js", "TypeScript", "Vite", "Tailwind CSS", "Context API"],
+    href: "https://github.com/PhPaing/repairqueue",
+    live: "https://repairqueue.netlify.app",
   },
   {
     title: "MovieTracker",
