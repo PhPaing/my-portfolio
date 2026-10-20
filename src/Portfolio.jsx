@@ -1,782 +1,349 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { ArrowUpRight, Check, Copy, Download, Menu, Moon, Sun, X } from "lucide-react";
+import { FaGithub, FaLinkedin, FaWhatsapp } from "react-icons/fa";
 import portrait from "./assets/profile.png";
-import resumePdf from "./assets/Phone_Myat_Paing_Resume.pdf";
-import {
-  Mail,
-  MessageCircle,
-  Send,
-  Download,
-  ArrowRight,
-  ArrowUpRight,
-  Sun,
-  Moon,
-  MapPin,
-  Briefcase,
-  AtSign,
-  CheckCircle2,
-  GraduationCap,
-  Menu,
-  X,
-} from "lucide-react";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import resume from "./assets/Phone_Myat_Paing_Resume.pdf";
+import { candidate, certs, education, experience, links, projects, proof, skills } from "./data";
 
-/* ============================================================
-   THEME TOKENS — light / dark, switched at runtime
-   Signature: the avatar ring gradient (blue → teal → emerald)
-   is the one bold, consistent accent; everything else is calm.
-   ============================================================ */
-const THEMES = {
-  dark: {
-    bg: "#0A0E14",
-    bgAlt: "#0F141C",
-    panel: "#131922",
-    panelAlt: "#171E29",
-    line: "#232B38",
-    text: "#EDF1F7",
-    textDim: "#98A2B3",
-    textFaint: "#5B6474",
-    navBg: "rgba(10,14,20,0.82)",
-    inputBg: "#0F141C",
-  },
-  light: {
-    bg: "#FBFBFA",
-    bgAlt: "#F3F4F2",
-    panel: "#FFFFFF",
-    panelAlt: "#F5F6F5",
-    line: "#E4E6E3",
-    text: "#14171C",
-    textDim: "#565D68",
-    textFaint: "#8A9099",
-    navBg: "rgba(251,251,250,0.82)",
-    inputBg: "#FFFFFF",
-  },
-};
+const NAV = [
+  ["projects", "Projects"],
+  ["experience", "Experience"],
+  ["skills", "Skills"],
+  ["education", "Education"],
+  ["contact", "Contact"],
+];
+const SECTION_IDS = NAV.map(([id]) => id);
 
-const GRADIENT = "linear-gradient(135deg, #0A2E6B 0%, #1D5FD6 50%, #4FC3F7 100%)";
-const ACCENT = "#2E7CF6";
+const btn = "inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors";
+const primary = `${btn} bg-accent text-paper hover:opacity-90`;
+const ghost = `${btn} border border-line text-ink hover:border-accent`;
 
-const FONT_HEAD = "'Sora', sans-serif";
-const FONT_BODY = "'Inter', sans-serif";
-const FONT_MONO = "'IBM Plex Mono', monospace";
+function useTheme() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem("theme");
+      if (saved) return saved;
+    } catch { /* storage unavailable */ }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("theme", theme); } catch { /* ignore */ }
+  }, [theme]);
+  return [theme, setTheme];
+}
 
-const PHOTO_SRC = portrait;
-const RESUME_SRC = resumePdf;
+function useActiveSection(ids) {
+  const [active, setActive] = useState("");
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+    return () => obs.disconnect();
+  }, [ids]);
+  return active;
+}
 
-/* ============================================================
-   SHARED
-   ============================================================ */
-function Section({ id, children, t, border = true }) {
+function Section({ id, title, children }) {
   return (
-    <section
-      id={id}
-      className="px-6 md:px-12 py-20 md:py-28 transition-colors duration-500"
-      style={{ borderTop: border ? `1px solid ${t.line}` : "none" }}
-    >
-      <div className="max-w-6xl mx-auto">{children}</div>
+    <section id={id} className="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-24">
+      <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
+      <div className="mt-10">{children}</div>
     </section>
   );
 }
 
-function Eyebrow({ children }) {
-  return (
-    <div
-      className="inline-flex items-center gap-2 text-[12.5px] font-semibold tracking-[0.14em] uppercase mb-4"
-      style={{ fontFamily: FONT_MONO, color: ACCENT }}
-    >
-      <span className="w-6 h-px" style={{ backgroundColor: ACCENT }} />
-      {children}
-    </div>
-  );
-}
-
-function Pill({ children, t, accent }) {
-  return (
-    <span
-      className="px-3 py-1.5 rounded-full text-[12.5px] font-medium transition-colors duration-500"
-      style={{
-        fontFamily: FONT_BODY,
-        color: accent ? "#0A0E14" : t.textDim,
-        backgroundColor: accent ? ACCENT : t.panelAlt,
-        border: accent ? "none" : `1px solid ${t.line}`,
-      }}
-    >
-      {children}
-    </span>
-  );
-}
-
-/* ============================================================
-   NAV
-   ============================================================ */
-function Nav({ t, isDark, setIsDark }) {
+function Nav({ theme, setTheme }) {
   const [open, setOpen] = useState(false);
-  const links = [
-    { label: "Home", href: "#top" },
-    { label: "About", href: "#about" },
-    { label: "Experience", href: "#experience" },
-    { label: "Projects", href: "#projects" },
-    { label: "Contact", href: "#contact" },
-  ];
+  const active = useActiveSection(SECTION_IDS);
   return (
-    <header
-      className="sticky top-0 z-50 backdrop-blur-md transition-colors duration-500"
-      style={{ backgroundColor: t.navBg, borderBottom: `1px solid ${t.line}` }}
-    >
-      <div className="max-w-6xl mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-2">
-          <span
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-[13px] font-bold"
-            style={{ background: GRADIENT, color: "#06131A" , fontFamily: FONT_HEAD}}
-          >
-            PM
-          </span>
-          <span className="text-[15px] font-semibold tracking-tight transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-            Phone Myat Paing
-          </span>
-        </a>
-
-        <nav className="hidden md:flex items-center gap-1">
-          {links.map((l) => (
+    <header className="sticky top-0 z-50 border-b border-line bg-paper/85 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 md:px-10">
+        <a href="#top" className="font-display text-lg font-bold tracking-tight">Phone Myat Paing</a>
+        <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
+          {NAV.map(([id, label]) => (
             <a
-              key={l.label}
-              href={l.href}
-              className="px-3.5 py-2 rounded-md text-[13.5px] font-medium transition-colors duration-300 hover:opacity-80"
-              style={{ fontFamily: FONT_BODY, color: t.textDim }}
+              key={id}
+              href={"#" + id}
+              aria-current={active === id ? "true" : undefined}
+              className={"rounded-md px-3 py-2 text-sm font-medium transition-colors " + (active === id ? "text-accent" : "text-mute hover:text-ink")}
             >
-              {l.label}
+              {label}
             </a>
           ))}
         </nav>
-
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setIsDark(!isDark)}
-            aria-label="Toggle dark mode"
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-colors duration-500"
-            style={{ border: `1px solid ${t.line}`, color: t.text }}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-line hover:border-accent"
           >
-            {isDark ? <Sun size={16} /> : <Moon size={16} />}
+            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           <button
-            className="md:hidden w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ color: t.text }}
             onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
+            aria-label="Menu"
             aria-expanded={open}
+            className="flex h-9 w-9 items-center justify-center md:hidden"
           >
             {open ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </div>
-
       {open && (
-        <div className="md:hidden px-6 pb-4 flex flex-col gap-1 transition-colors duration-500" style={{ borderTop: `1px solid ${t.line}` }}>
-          {links.map((l) => (
-            <a key={l.label} href={l.href} onClick={() => setOpen(false)} className="py-2.5 text-[14px] font-medium" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-              {l.label}
+        <nav aria-label="Mobile" className="flex flex-col border-t border-line px-6 pb-3 md:hidden">
+          {NAV.map(([id, label]) => (
+            <a key={id} href={"#" + id} onClick={() => setOpen(false)} className="py-3 text-sm font-medium text-mute">
+              {label}
             </a>
           ))}
-        </div>
+        </nav>
       )}
     </header>
   );
 }
 
-/* ============================================================
-   HERO
-   ============================================================ */
-const ROLES = ["Full-Stack Developer"];
-
-function Hero({ t }) {
-  const [idx, setIdx] = useState(0);
-  useEffect(() => {
-    const iv = setInterval(() => setIdx((i) => (i + 1) % ROLES.length), 2200);
-    return () => clearInterval(iv);
-  }, []);
-
-  const INFO = [
-    { icon: <Briefcase size={16} />, text: "React · TypeScript · ASP.NET Core · SQL Server" },
-    { icon: <MapPin size={16} />, text: "based in Bangkok, Thailand" },
-    { icon: <GraduationCap size={16} />, text: "B.Sc. IT (Software Engineering), Stamford" },
-    { icon: <AtSign size={16} />, text: "phonemyatp27@gmail.com" },
-  ];
-
+function ApiCard() {
+  const entries = Object.entries(candidate);
+  const fmt = (v) => JSON.stringify(v).replace(/","/g, '", "');
   return (
-    <section id="top" className="relative px-6 md:px-12 pt-16 md:pt-24 pb-20 overflow-hidden">
-      <div
-        className="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full blur-3xl opacity-20"
-        style={{ background: GRADIENT }}
-      />
-      <div className="max-w-6xl mx-auto relative grid md:grid-cols-[380px_1fr] gap-14 items-center">
-        {/* AVATAR */}
-        <div className="flex justify-center md:justify-start">
-          <div className="relative">
-            <div
-              className="w-64 h-64 md:w-80 md:h-80 rounded-full p-1"
-              style={{ background: GRADIENT }}
-            >
-              <img
-                src={PHOTO_SRC}
-                alt="Portrait of Phone Myat Paing"
-                className="w-full h-full rounded-full object-cover "
-              />
-            </div>
-            <span
-              className="absolute -bottom-2 -right-1 md:right-4 px-3 py-1.5 rounded-full text-[12px] font-semibold flex items-center gap-1.5 shadow-lg transition-colors duration-500"
-              style={{ backgroundColor: t.panel, border: `1px solid ${t.line}`, color: t.text, fontFamily: FONT_MONO }}
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: ACCENT }} />
-                <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: ACCENT }} />
-              </span>
-              open to work
-            </span>
-          </div>
-        </div>
+    <figure
+      className="overflow-hidden rounded-xl border border-line bg-panel shadow-[0_1px_0_var(--line)]"
+      aria-label="Profile summary shown as a JSON API response"
+    >
+      <figcaption className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 font-mono text-xs text-mute">
+        <span className="truncate">GET /api/candidates/phone-myat-paing</span>
+        <span className="status-in shrink-0 rounded bg-ok/15 px-2 py-0.5 font-medium text-ok">200 OK</span>
+      </figcaption>
+      <pre className="overflow-x-auto px-4 py-5 font-mono text-[13px] leading-7 whitespace-pre-wrap">
+        <span className="line-in block" style={{ "--i": 0 }}>{"{"}</span>
+        {entries.map(([k, v], i) => (
+          <span key={k} className="line-in block pl-8 -indent-4" style={{ "--i": i + 1 }}>
+            <span className="text-mute">"{k}"</span>: <span className={k === "availability" ? "font-medium text-ok" : "text-accent"}>{fmt(v)}</span>
+            {i < entries.length - 1 ? "," : ""}
+          </span>
+        ))}
+        <span className="line-in block" style={{ "--i": entries.length + 1 }}>{"}"}</span>
+      </pre>
+    </figure>
+  );
+}
 
-        {/* TEXT */}
-        <div>
-          <p className="text-lg md:text-xl mb-2 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-            Hi, I'm
+function Hero() {
+  return (
+    <section id="top" className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-12 pt-14 md:grid-cols-[1.15fr_1fr] md:px-10 md:pb-16 md:pt-24">
+      <div>
+        <div className="mb-6 flex items-center gap-3">
+          <img src={portrait} alt="Portrait of Phone Myat Paing" width="48" height="48" className="h-12 w-12 rounded-full border border-line object-cover" />
+          <p className="flex items-center gap-2 text-sm font-medium text-mute">
+            <span className="h-2 w-2 rounded-full bg-ok" aria-hidden="true" />
+            Open to work in Bangkok, available immediately
           </p>
-          <h1
-            className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-3 transition-colors duration-500"
-            style={{ fontFamily: FONT_HEAD, color: t.text }}
-          >
-            Phone Myat Paing <span className="wave-emoji" style={{ display: "inline-block" }}>👋</span>
-          </h1>
-          <div className="h-10 md:h-12 mb-6">
-            <h2
-              className="text-2xl md:text-[32px] font-bold transition-opacity duration-500"
-              style={{ fontFamily: FONT_HEAD, backgroundImage: GRADIENT, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}
-              key={idx}
-            >
-              I'm a {ROLES[idx]}.
-            </h2>
-          </div>
-
-          <div className="flex flex-col gap-2.5 mb-8">
-            {INFO.map((i, k) => (
-              <div key={k} className="flex items-center gap-3 text-[14.5px] transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-                <span
-                  className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500"
-                  style={{ backgroundColor: t.panelAlt, color: ACCENT, border: `1px solid ${t.line}` }}
-                >
-                  {i.icon}
-                </span>
-                {i.text}
-              </div>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 mb-7">
-            <a
-              href={RESUME_SRC}
-              download="Phone_Myat_Paing_Resume.pdf"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-[14px] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-              style={{ background: GRADIENT, color: "#08121A", fontFamily: FONT_BODY }}
-            >
-              <Download size={16} /> Download Resume
+        </div>
+        <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
+          I build React front ends and ASP.NET Core back ends.
+        </h1>
+        <p className="mt-6 max-w-[60ch] text-lg leading-relaxed text-mute">
+          I'm Phone Myat Paing, a junior full-stack developer with a B.Sc. in IT (Software Engineering) from Stamford.
+          After a five-month internship at Bangkok Glass building React and TypeScript pages on ASP.NET Core APIs,
+          I'm looking for an entry-level full-stack, .NET or React role.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <a href={resume} download="Phone_Myat_Paing_Resume.pdf" className={primary}>
+            <Download size={16} /> Download resume
+          </a>
+          <a href="#contact" className={ghost}>Contact me</a>
+          <span className="mx-1 hidden h-6 w-px bg-line sm:block" aria-hidden="true" />
+          {[
+            [links.github, "GitHub", <FaGithub size={20} key="g" />],
+            [links.linkedin, "LinkedIn", <FaLinkedin size={20} key="l" />],
+            [links.whatsapp, "WhatsApp", <FaWhatsapp size={20} key="w" />],
+          ].map(([href, label, icon]) => (
+            <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="rounded-md p-2 text-mute hover:text-accent">
+              {icon}
             </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full font-semibold text-[14px] transition-colors duration-300 hover:opacity-80"
-              style={{ border: `1.5px solid ${t.line}`, color: t.text, fontFamily: FONT_BODY }}
-            >
-              Contact Me <ArrowRight size={16} />
-            </a>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <SocialIcon href="https://www.linkedin.com/in/phone-myat-paing-572707386/" label="LinkedIn" t={t}>
-              <FaLinkedin size={18} />
-            </SocialIcon>
-            <SocialIcon href="https://wa.me/66958199409" label="WhatsApp" t={t}>
-              <MessageCircle size={18} />
-            </SocialIcon>
-            <SocialIcon href="mailto:phonemyatp27@gmail.com" label="Email" t={t}>
-              <Mail size={18} />
-            </SocialIcon>
-            <SocialIcon href="https://github.com/PhPaing" label="GitHub" t={t}>
-              <FaGithub size={18} />
-            </SocialIcon>
-          </div>
+          ))}
         </div>
       </div>
+      <ApiCard />
     </section>
   );
 }
 
-function SocialIcon({ href, label, children, t }) {
+function ProofStrip() {
   return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={label}
-      className="w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 hover:-translate-y-1"
-      style={{ border: `1px solid ${t.line}`, color: t.text }}
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = ACCENT)}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = t.line)}
-    >
-      {children}
-    </a>
+    <div className="mx-auto max-w-6xl px-6 md:px-10">
+      <dl className="grid gap-6 border-y border-line py-8 sm:grid-cols-3">
+        {proof.map(([n, label]) => (
+          <div key={n}>
+            <dt className="font-display text-2xl font-bold">{n}</dt>
+            <dd className="mt-1 text-sm text-mute">{label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
   );
 }
 
-/* ============================================================
-   ABOUT
-   ============================================================ */
-function About({ t }) {
+function Projects() {
   return (
-    <Section id="about" t={t}>
-      <Eyebrow t={t}>About Me</Eyebrow>
-      <div className="grid md:grid-cols-[1.2fr_1fr] gap-14">
-        <div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-            A little about my work
-          </h2>
-          <p className="text-[15.5px] leading-relaxed mb-4 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-            I'm a full-stack developer with a B.Sc. in Information Technology (Software
-            Engineering) from Stamford International University. I completed a five-month
-            software developer internship at Bangkok Glass Public Company Limited, building
-            React.js and TypeScript interfaces for a customer-facing website and integrating them
-            with ASP.NET Core REST APIs.
-          </p>
-          <p className="text-[15.5px] leading-relaxed mb-6 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-            I work across the stack: C#, ASP.NET Core and SQL Server on the back end, React.js and
-            Tailwind CSS on the front end. I test endpoints with Postman and Swagger UI and keep my
-            work in Git and GitHub. I'm seeking for a entry-level full-stack, .NET or React role in Bangkok.
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Pill t={t}>English — Fluent</Pill>
-            <Pill t={t}>Burmese — Native</Pill>
-            <Pill t={t} accent>Available Immediately</Pill>
-          </div>
-        </div>
-
-        <div
-          className="rounded-2xl p-6 transition-colors duration-500"
-          style={{ backgroundColor: t.panel, border: `1px solid ${t.line}` }}
-        >
-          <div className="text-[12px] font-semibold uppercase tracking-wider mb-4" style={{ fontFamily: FONT_MONO, color: ACCENT }}>
-            Snapshot
-          </div>
-          {[
-            ["Location", "Bangkok, Thailand"],
-            ["Role", "Full-Stack Developer"],
-            ["Availability", "Immediate"],
-            ["Main stack", "React · ASP.NET Core · SQL Server"],
-            ["Languages", "English (fluent) · Burmese (native)"],
-          ].map(([k, v]) => (
-            <div key={k} className="flex items-baseline justify-between gap-4 py-3 transition-colors duration-500" style={{ borderBottom: `1px solid ${t.line}` }}>
-              <span className="text-[13px] transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textFaint }}>
-                {k}
-              </span>
-              <span className="text-[13.5px] font-medium text-right transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.text }}>
-                {v}
-              </span>
+    <Section id="projects" title="Projects I've built">
+      <div>
+        {projects.map((p) => (
+          <article key={p.title} className="grid gap-6 border-t border-line py-9 md:grid-cols-[1fr_auto] md:gap-12">
+            <div>
+              <h3 className="font-display text-2xl font-bold tracking-tight">{p.title}</h3>
+              <p className="mt-2 max-w-[62ch] text-mute">{p.summary}</p>
+              <ul className="mt-4 max-w-[62ch] space-y-2 text-[15px]">
+                {p.points.map((pt) => (
+                  <li key={pt} className="flex gap-3">
+                    <span className="mt-[0.7em] h-px w-3 shrink-0 bg-accent" aria-hidden="true" />
+                    {pt}
+                  </li>
+                ))}
+              </ul>
+              <ul className="mt-5 flex flex-wrap gap-2" aria-label="Technologies used">
+                {p.tags.map((tag) => (
+                  <li key={tag} className="rounded-md border border-line px-2.5 py-1 text-xs font-medium text-mute">{tag}</li>
+                ))}
+              </ul>
             </div>
-          ))}
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-/* ============================================================
-   EXPERIENCE
-   ============================================================ */
-const DUTIES = [
-  "Built 10+ reusable React.js and TypeScript components with Tailwind CSS, used across 7 pages of the redesigned customer-facing website",
-  "Implemented client-side routing with React Router and responsive layouts using Vite",
-  "Built the front end for an AI chat assistant that connects to an AI chatbot service through its API",
-  "Integrated the front end with ASP.NET Core REST APIs, handling JSON requests and responses",
-  "Tested REST endpoints with Postman and Swagger UI and reported integration and data issues to backend developers",
-  "Used Git/GitHub for version control and validated features before deployment",
-];
-
-function Experience({ t }) {
-  return (
-    <Section id="experience" t={t}>
-      <Eyebrow t={t}>Experience</Eyebrow>
-      <h2 className="text-3xl md:text-4xl font-bold mb-10 tracking-tight transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-        Where I've worked
-      </h2>
-
-      <div className="rounded-2xl overflow-hidden transition-colors duration-500" style={{ border: `1px solid ${t.line}`, backgroundColor: t.panel }}>
-        <div
-          className="flex flex-col md:flex-row md:items-center justify-between gap-2 px-6 py-5 transition-colors duration-500"
-          style={{ borderBottom: `1px solid ${t.line}`, backgroundColor: t.panelAlt }}
-        >
-          <div>
-            <div className="text-lg font-semibold transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-              Software Developer Intern
-            </div>
-            <div className="text-[13.5px] transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-              Bangkok Glass Public Company Limited · Bangkok, Thailand
-            </div>
-          </div>
-          <Pill t={t} accent>Nov 2025 — Mar 2026</Pill>
-        </div>
-        <ul className="p-6 grid sm:grid-cols-2 gap-x-8 gap-y-4">
-          {DUTIES.map((d, i) => (
-            <li key={i} className="flex items-start gap-2.5 text-[14px] leading-relaxed transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-              <CheckCircle2 size={16} className="mt-0.5 shrink-0" color={ACCENT} />
-              {d}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </Section>
-  );
-}
-
-/* ============================================================
-   PROJECTS
-   ============================================================ */
-const PROJECTS = [
-  {
-   title: "RepairQueue",
-    desc: "Bilingual (Thai/English) condo maintenance tracker. Residents submit repair requests by room and issue type and follow their live queue position, while an admin dashboard assigns technicians and updates ticket status, with simulated LINE notifications.",
-    tags: ["React.js", "TypeScript", "Vite", "Tailwind CSS", "Context API"],
-    href: "https://github.com/PhPaing/repairqueue",
-    live: "https://repairqueue.netlify.app",
-  },
-  {
-    title: "MovieTracker",
-    desc: "Full-stack movie watchlist: Web API with JWT authentication and EF Core migrations, a background service importing from the TMDB API every 24 hours, and a React front end with search, genre filter and server-side pagination.",
-    tags: ["ASP.NET Core", "C#", "SQL Server", "EF Core", "React.js", "JWT"],
-    href: "https://github.com/PhPaing/Movie-Tracker",
-  },
-  {
-    title: "BG Pathum United Football Club Website",
-    desc: "Responsive club website with match schedules, news, standings and video, using reusable React and TypeScript components and the YouTube and Football Data APIs.",
-    tags: ["React.js", "TypeScript", "Tailwind CSS", "REST APIs"],
-    href: "https://github.com/PhPaing/bg-pathum-united-website",
-    live: "https://bg-pathum-united-website.vercel.app",
-  },
-];
-
-function Projects({ t }) {
-  return (
-    <Section id="projects" t={t}>
-      <Eyebrow t={t}>Portfolio</Eyebrow>
-      <h2 className="text-3xl md:text-4xl font-bold mb-10 tracking-tight transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-        Selected projects
-      </h2>
-
-      <div className="grid md:grid-cols-3 gap-5">
-        {PROJECTS.map((p) => (
-          <div
-            key={p.title}
-            className="group rounded-2xl p-6 flex flex-col transition-all duration-300 hover:-translate-y-1.5"
-            style={{ backgroundColor: t.panel, border: `1px solid ${t.line}` }}
-          >
-            <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
-              style={{ background: GRADIENT }}
-            >
-              <FaGithub size={18} color="#081018" />
-            </div>
-            <h3 className="text-[17px] font-semibold mb-2.5 leading-snug transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-              {p.title}
-            </h3>
-            <p className="text-[13.5px] leading-relaxed mb-5 flex-1 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-              {p.desc}
-            </p>
-            <div className="flex flex-wrap gap-1.5 mb-5">
-              {p.tags.map((tag) => (
-                <span key={tag} className="text-[11px] px-2 py-1 rounded-md transition-colors duration-500" style={{ fontFamily: FONT_MONO, color: t.textDim, backgroundColor: t.panelAlt }}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <div className="flex items-center gap-5 text-[13px] font-semibold mt-auto" style={{ fontFamily: FONT_BODY, color: ACCENT }}>
+            <div className="flex flex-wrap gap-3 md:flex-col md:items-stretch">
               {p.live && (
-                <a href={p.live} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:underline">
-                  Live demo
-                  <ArrowUpRight size={14} />
+                <a href={p.live} target="_blank" rel="noopener noreferrer" className={primary}>
+                  Live demo <ArrowUpRight size={15} />
                 </a>
               )}
-              <a href={p.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:underline">
-                {p.live ? "View code" : "View project"}
-                <ArrowUpRight size={14} />
+              <a href={p.code} target="_blank" rel="noopener noreferrer" className={ghost}>
+                <FaGithub size={15} /> Source code
               </a>
             </div>
-          </div>
+          </article>
         ))}
       </div>
     </Section>
   );
 }
 
-/* ============================================================
-   SKILLS + EDUCATION
-   ============================================================ */
-const SKILL_GROUPS = [
-  { key: "Languages", values: ["TypeScript", "JavaScript", "C#", "Java"] },
-  { key: "Frontend", values: ["React.js", "HTML5", "CSS3", "Tailwind CSS"] },
-  { key: "API & Backend", values: ["ASP.NET Core Web API", "EF Core", "REST APIs", "JWT", "JSON"] },
-  { key: "Database", values: ["SQL Server", "MySQL", "SQLite"] },
-  { key: "Tools", values: ["Git", "GitHub", "Postman", "Swagger UI", "Visual Studio", "VS Code"] },
-];
-const EXPERTISE = ["REST API integration", "Relational database design", "Responsive UI", "API testing", "Client-side routing"];
-
-function Skills({ t }) {
+function Experience() {
   return (
-    <Section id="skills" t={t}>
-      <Eyebrow t={t}>Skills</Eyebrow>
-      <h2 className="text-3xl md:text-4xl font-bold mb-10 tracking-tight transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-        Tools &amp; technologies
-      </h2>
-
-      <div className="grid md:grid-cols-5 gap-4 mb-10">
-        {SKILL_GROUPS.map((g) => (
-          <div key={g.key} className="rounded-xl p-4 transition-colors duration-500" style={{ backgroundColor: t.panel, border: `1px solid ${t.line}` }}>
-            <div className="text-[11.5px] font-semibold uppercase tracking-wider mb-3" style={{ fontFamily: FONT_MONO, color: ACCENT }}>
-              {g.key}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              {g.values.map((v) => (
-                <span key={v} className="text-[13px] transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-                  {v}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {EXPERTISE.map((e) => (
-          <Pill key={e} t={t}>{e}</Pill>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function Education({ t }) {
-  return (
-    <Section id="education" t={t}>
-      <Eyebrow t={t}>Education</Eyebrow>
-      <h2 className="text-3xl md:text-4xl font-bold mb-10 tracking-tight transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-        Education &amp; certifications
-      </h2>
-
-      <div className="grid md:grid-cols-2 gap-5 mb-8">
-        {[
-          { range: "2023 — 2026", school: "Stamford International University", detail: "B.Sc. Information Technology (Software Engineering)", note: "GPA 3.35" },
-          { range: "2019 — 2022", school: "Youth International University", detail: "Diploma in Computing, Pearson BTEC Level 5 (UK)", note: "Merit" },
-        ].map((e) => (
-          <div key={e.school} className="rounded-2xl p-6 transition-colors duration-500" style={{ backgroundColor: t.panel, border: `1px solid ${t.line}` }}>
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style={{ background: GRADIENT }}>
-              <GraduationCap size={18} color="#081018" />
-            </div>
-            <div className="text-[12px] mb-2 font-medium" style={{ fontFamily: FONT_MONO, color: ACCENT }}>
-              {e.range}
-            </div>
-            <h3 className="text-[16px] font-semibold mb-1 transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-              {e.school}
-            </h3>
-            <p className="text-[13.5px] mb-1 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-              {e.detail}
-            </p>
-            <p className="text-[12.5px] transition-colors duration-500" style={{ fontFamily: FONT_MONO, color: t.textFaint }}>
-              {e.note}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <Pill t={t}>Responsive Web Design — freeCodeCamp</Pill>
-        <Pill t={t}>JS Algorithms &amp; Data Structures — freeCodeCamp</Pill>
-        <Pill t={t}>Cloud-Based Web Development — Stamford</Pill>
-      </div>
-    </Section>
-  );
-}
-
-/* ============================================================
-   CONTACT
-   ============================================================ */
-function Contact({ t }) {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
-
-  const sendMail = () => {
-    const subject = encodeURIComponent(`Opportunity for ${form.name || "you"} — via portfolio`);
-    const body = encodeURIComponent(`${form.message}\n\n— ${form.name} (${form.email})`);
-    window.location.href = `mailto:phonemyatp27@gmail.com?subject=${subject}&body=${body}`;
-  };
-
-  const CONTACT_ITEMS = [
-    { label: "Email", value: "phonemyatp27@gmail.com", href: "mailto:phonemyatp27@gmail.com", icon: <Mail size={17} /> },
-    { label: "WhatsApp", value: "+66 95 819 9409", href: "https://wa.me/66958199409", icon: <MessageCircle size={17} /> },
-    { label: "LINE", value: "+66 95 819 9409 (LINE)", href: "tel:+66958199409", icon: <Send size={17} /> },
-    { label: "LinkedIn", value: "/in/phone-myat-paing-572707386", href: "https://www.linkedin.com/in/phone-myat-paing-572707386/", icon: <FaLinkedin size={17} /> },
-  ];
-
-  return (
-    <Section id="contact" t={t}>
-      <Eyebrow t={t}>Contact</Eyebrow>
-      <div className="grid md:grid-cols-2 gap-14">
-        <div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight transition-colors duration-500" style={{ fontFamily: FONT_HEAD, color: t.text }}>
-            Let's build something.
-          </h2>
-          <p className="text-[15px] leading-relaxed mb-8 max-w-md transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-            Open to junior full-stack, .NET and React developer roles in Bangkok, available to start
-            immediately. Reach out on whichever channel is easiest — I reply fast.
-          </p>
-
-          <div className="flex flex-col gap-2.5">
-            {CONTACT_ITEMS.map((c) => (
-              <a
-                key={c.label}
-                href={c.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3.5 rounded-xl px-4 py-3.5 transition-colors duration-300 hover:opacity-80"
-                style={{ border: `1px solid ${t.line}` }}
-              >
-                <span className="flex items-center justify-center w-9 h-9 rounded-lg shrink-0" style={{ background: GRADIENT, color: "#081018" }}>
-                  {c.icon}
-                </span>
-                <span>
-                  <span className="block text-[12px] transition-colors duration-500" style={{ fontFamily: FONT_MONO, color: t.textFaint }}>
-                    {c.label}
-                  </span>
-                  <span className="block text-[14px] transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.text }}>
-                    {c.value}
-                  </span>
-                </span>
-              </a>
+    <Section id="experience" title="Experience">
+      <div className="grid gap-8 md:grid-cols-[220px_1fr] md:gap-12">
+        <p className="text-sm font-medium text-mute">{experience.dates}</p>
+        <div className="border-l border-line pl-6 md:pl-10">
+          <h3 className="font-display text-xl font-bold">{experience.role}</h3>
+          <p className="mt-1 text-mute">{experience.company}</p>
+          <p className="mt-1 text-sm"><span className="font-semibold">Project:</span> {experience.project}</p>
+          <ul className="mt-6 max-w-[68ch] space-y-3 text-[15px] leading-relaxed">
+            {experience.duties.map((d) => (
+              <li key={d} className="flex gap-3">
+                <Check size={16} className="mt-1 shrink-0 text-accent" aria-hidden="true" />
+                {d}
+              </li>
             ))}
-          </div>
-        </div>
-
-        <div className="rounded-2xl p-6 transition-colors duration-500" style={{ backgroundColor: t.panel, border: `1px solid ${t.line}` }}>
-          <label className="block mb-4">
-            <span className="block text-[12.5px] font-medium mb-1.5 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-              Name
-            </span>
-            <input
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Your name"
-              className="w-full rounded-lg px-3.5 py-2.5 text-[14px] outline-none focus:ring-2 transition-colors duration-500"
-              style={{ backgroundColor: t.inputBg, border: `1px solid ${t.line}`, color: t.text, fontFamily: FONT_BODY }}
-            />
-          </label>
-
-          <label className="block mb-4">
-            <span className="block text-[12.5px] font-medium mb-1.5 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-              Email
-            </span>
-            <input
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="you@company.com"
-              type="email"
-              className="w-full rounded-lg px-3.5 py-2.5 text-[14px] outline-none focus:ring-2 transition-colors duration-500"
-              style={{ backgroundColor: t.inputBg, border: `1px solid ${t.line}`, color: t.text, fontFamily: FONT_BODY }}
-            />
-          </label>
-
-          <label className="block mb-6">
-            <span className="block text-[12.5px] font-medium mb-1.5 transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textDim }}>
-              Message
-            </span>
-            <textarea
-              value={form.message}
-              onChange={(e) => setForm({ ...form, message: e.target.value })}
-              placeholder="Tell me about the role..."
-              rows={4}
-              className="w-full rounded-lg px-3.5 py-2.5 text-[14px] outline-none focus:ring-2 resize-none transition-colors duration-500"
-              style={{ backgroundColor: t.inputBg, border: `1px solid ${t.line}`, color: t.text, fontFamily: FONT_BODY }}
-            />
-          </label>
-
-          <button
-            onClick={sendMail}
-            className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-semibold text-[14px] transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-lg"
-            style={{ background: GRADIENT, color: "#081018", fontFamily: FONT_BODY }}
-          >
-            Send Message <ArrowRight size={16} />
-          </button>
+          </ul>
         </div>
       </div>
     </Section>
   );
 }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
-function Footer({ t }) {
+function Skills() {
   return (
-    <footer className="px-6 md:px-12 py-10 transition-colors duration-500" style={{ borderTop: `1px solid ${t.line}` }}>
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-        <div className="text-[13px] transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: t.textFaint }}>
-          © {new Date().getFullYear()} Phone Myat Paing. Built with React &amp; Tailwind CSS.
-        </div>
-        <a href="#top" className="text-[13px] font-medium transition-colors duration-500" style={{ fontFamily: FONT_BODY, color: ACCENT }}>
-          Back to top ↑
-        </a>
-      </div>
-    </footer>
+    <Section id="skills" title="Skills">
+      <dl>
+        {skills.map(([group, items]) => (
+          <div key={group} className="grid gap-1 border-t border-line py-4 md:grid-cols-[220px_1fr] md:gap-12">
+            <dt className="font-semibold">{group}</dt>
+            <dd className="text-mute">{items}</dd>
+          </div>
+        ))}
+      </dl>
+    </Section>
   );
 }
 
-/* ============================================================
-   ROOT
-   ============================================================ */
-export default function Portfolio() {
-  const [isDark, setIsDark] = useState(true);
-  const t = isDark ? THEMES.dark : THEMES.light;
-
+function Education() {
   return (
-    <div style={{ backgroundColor: t.bg, minHeight: "100vh" }} className="antialiased transition-colors duration-500">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-        * { scroll-behavior: smooth; }
-        @keyframes wave {
-          0% { transform: rotate(0deg); }
-          8% { transform: rotate(16deg); }
-          16% { transform: rotate(-10deg); }
-          24% { transform: rotate(16deg); }
-          32% { transform: rotate(-6deg); }
-          40% { transform: rotate(12deg); }
-          48% { transform: rotate(0deg); }
-          100% { transform: rotate(0deg); }
-        }
-        .wave-emoji {
-          transform-origin: 70% 70%;
-          animation: wave 2.6s ease-in-out infinite;
-          animation-delay: 0.6s;
-        }
-        ::selection { background: ${ACCENT}44; }
-        input::placeholder, textarea::placeholder { color: ${t.textFaint}; }
-        a, button { -webkit-tap-highlight-color: transparent; }
-        a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
-          outline: 2px solid ${ACCENT};
-          outline-offset: 2px;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
-        }
-      `}</style>
-      <Nav t={t} isDark={isDark} setIsDark={setIsDark} />
-      <Hero t={t} />
-      <About t={t} />
-      <Experience t={t} />
-      <Projects t={t} />
-      <Skills t={t} />
-      <Education t={t} />
-      <Contact t={t} />
-      <Footer t={t} />
-    </div>
+    <Section id="education" title="Education">
+      <div className="grid gap-10 md:grid-cols-2">
+        {education.map((e) => (
+          <div key={e.school} className="border-t border-line pt-5">
+            <p className="text-sm text-mute">{e.range}</p>
+            <h3 className="mt-2 font-display text-xl font-bold">{e.school}</h3>
+            <p className="mt-1 text-mute">{e.detail}</p>
+            <p className="mt-1 text-sm font-medium">{e.note}</p>
+          </div>
+        ))}
+      </div>
+      <ul className="mt-10 flex flex-wrap gap-2" aria-label="Certifications">
+        {certs.map((c) => (
+          <li key={c} className="rounded-md border border-line px-3 py-1.5 text-sm text-mute">{c}</li>
+        ))}
+      </ul>
+    </Section>
+  );
+}
+
+function Contact() {
+  const [copied, setCopied] = useState(false);
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(links.email);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      window.location.href = "mailto:" + links.email;
+    }
+  };
+  return (
+    <Section id="contact" title="Let's talk about a role">
+      <p className="max-w-[56ch] text-lg leading-relaxed text-mute">
+        I'm open to junior full-stack, .NET and React developer roles in Bangkok and can start immediately.
+        Email is the fastest way to reach me; I'm also on WhatsApp and LINE at {links.phone}.
+      </p>
+      <div className="mt-8 flex flex-wrap gap-3">
+        <a href={"mailto:" + links.email} className={primary}>Email {links.email}</a>
+        <button onClick={copyEmail} className={ghost} aria-live="polite">
+          {copied ? <Check size={16} /> : <Copy size={16} />}
+          {copied ? "Email copied" : "Copy email"}
+        </button>
+        <a href={links.whatsapp} target="_blank" rel="noopener noreferrer" className={ghost}><FaWhatsapp size={16} /> WhatsApp</a>
+        <a href={links.linkedin} target="_blank" rel="noopener noreferrer" className={ghost}><FaLinkedin size={16} /> LinkedIn</a>
+        <a href={links.github} target="_blank" rel="noopener noreferrer" className={ghost}><FaGithub size={16} /> GitHub</a>
+      </div>
+    </Section>
+  );
+}
+
+export default function Portfolio() {
+  const [theme, setTheme] = useTheme();
+  return (
+    <>
+      <a href="#projects" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-60 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-paper">
+        Skip to projects
+      </a>
+      <Nav theme={theme} setTheme={setTheme} />
+      <main>
+        <Hero />
+        <ProofStrip />
+        <Projects />
+        <Experience />
+        <Skills />
+        <Education />
+        <Contact />
+      </main>
+      <footer className="border-t border-line px-6 py-8 text-sm text-mute md:px-10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 md:flex-row">
+          <p>&copy; {new Date().getFullYear()} Phone Myat Paing. Built with React and Tailwind CSS.</p>
+          <a href="#top" className="font-medium text-accent">Back to top</a>
+        </div>
+      </footer>
+    </>
   );
 }

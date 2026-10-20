@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-panel: var(--panel);
+  --color-ink: var(--ink);
+  --color-mute: var(--mute);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-ok: var(--ok);
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  --paper: #f5f6f9; --panel: #ffffff; --ink: #0f1a2e; --mute: #55627a;
+  --line: #dde2ea; --accent: #2243d6; --ok: #0b8a46;
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --paper: #0c121d; --panel: #131b2a; --ink: #eaf0fa; --mute: #9aa8c0;
+  --line: #243047; --accent: #86a2ff; --ok: #3dd68c;
+  color-scheme: dark;
+}
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+/* The one orchestrated moment: the API response prints line by line on load. */
+.line-in { opacity: 0; animation: line-in 0.4s ease-out forwards; animation-delay: calc(var(--i) * 130ms + 350ms); }
+@keyframes line-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.status-in { opacity: 0; animation: line-in 0.4s ease-out 0.15s forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .line-in, .status-in { opacity: 1; animation: none; }
+}
