@@ -13,10 +13,10 @@ export const candidate = {
   name: "Phone Myat Paing",
   role: "Full-stack developer",
   location: "Bangkok, Thailand",
-  stack: ["React", "TypeScript", "ASP.NET Core", "C#", "SQL Server"],
+  stack: ["Laravel", "React", "TypeScript", "ASP.NET Core", "MySQL", "SQL Server"],
   education: "B.Sc. IT (Software Engineering)",
   languages: ["English (fluent)", "Burmese (native)"],
-  seeking: ["Junior full-stack", ".NET", "React"],
+  seeking: ["Junior full-stack", "Laravel", ".NET", "React"],
   visa: "Open to Non-B visa sponsorship",
   availability: "Immediately",
 };
@@ -24,10 +24,21 @@ export const candidate = {
 export const proof = [
   ["5 months", "developer internship at Bangkok Glass"],
   ["10+ components", "built for a 7-page customer-facing site"],
-  ["3 projects", "with source on GitHub, 2 with live demos"],
+  ["4 projects", "with source on GitHub, 2 with live demos"],
 ];
 
 export const projects = [
+  {
+    title: "Ticket Tracker",
+    summary: "A support ticket tracker built with Laravel and MySQL, deployed to an Ubuntu environment with Nginx.",
+    points: [
+      "CRUD for tickets with server-side validation, status filtering and pagination",
+      "Responsive Bootstrap 5 interface for desktop and mobile",
+      "Deployed to Ubuntu 24.04 (WSL2) with Nginx, PHP-FPM and MySQL: server block, production .env, file permissions, a dedicated MySQL user and a Git-based deploy script",
+    ],
+    tags: ["Laravel 12", "PHP 8.3", "MySQL", "Bootstrap", "Nginx", "Linux"],
+    code: "https://github.com/PhPaing/laravel-ticket-tracker",
+  },
   {
     title: "MovieTracker",
     summary: "A full-stack movie watchlist with its own authenticated API and a React client.",
@@ -81,11 +92,11 @@ export const experience = {
 };
 
 export const skills = [
-  ["Languages", "TypeScript, JavaScript, C#, Java"],
+  ["Languages", "PHP, TypeScript, JavaScript, C#, Java"],
   ["Front end", "React.js, HTML5, CSS3, Tailwind CSS"],
-  ["API and back end", "ASP.NET Core Web API, EF Core, REST APIs, JWT, JSON"],
+  ["API and back end", "Laravel, ASP.NET Core Web API, EF Core, REST APIs, JWT, JSON"],
   ["Databases", "SQL Server, MySQL, SQLite"],
-  ["Tools", "Git, GitHub, Postman, Swagger UI, Visual Studio, VS Code"],
+  ["Tools", "Git, GitHub, Linux (Ubuntu), Nginx, Postman, Swagger UI, Visual Studio, VS Code"],
   ["Practices", "REST API integration, relational database design, responsive UI, API testing, client-side routing"],
 ];
 

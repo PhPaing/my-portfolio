@@ -6,7 +6,7 @@ A personal portfolio site built with React, Vite, and Tailwind CSS — showcasin
 
 ## About
 
-I'm Phone Myat Paing, a Full-Stack Developer (React + .NET) based in Bangkok, Thailand, currently finishing a B.Sc. in Information Technology at Stamford International University. This site highlights my internship experience, academic projects, and technical skill set.
+I'm Phone Myat Paing, a Full-Stack Developer (Laravel, React and .NET) based in Bangkok, Thailand, currently finishing a B.Sc. in Information Technology at Stamford International University. This site highlights my internship experience, academic projects, and technical skill set.
 
 ## Tech Stack
 
@@ -22,6 +22,10 @@ I'm Phone Myat Paing, a Full-Stack Developer (React + .NET) based in Bangkok, Th
 - Animated typing effect in the hero
 - Project showcase with tech stack tags
 - Contact section with direct email and phone links
+
+## Editing content
+
+All text (projects, skills, experience, links) lives in `src/data.js`. The layout in `src/Portfolio.jsx` does not need to change when you add a project.
 
 ## Getting Started
 
@@ -51,7 +55,8 @@ my-portfolio/
 ├── public/
 ├── src/
 │   ├── assets/
-│   │   └── profile.jpg
+│   │   ├── profile.png
+│   │   └── Phone_Myat_Paing_Resume.pdf
 │   ├── App.jsx
 │   ├── Portfolio.jsx
 │   ├── index.css

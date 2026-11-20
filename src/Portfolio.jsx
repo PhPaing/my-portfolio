@@ -146,12 +146,12 @@ function Hero() {
           </p>
         </div>
         <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-          I build React front ends and ASP.NET Core back ends.
+          I build Laravel and ASP.NET Core back ends with React front ends.
         </h1>
         <p className="mt-6 max-w-[60ch] text-lg leading-relaxed text-mute">
           I'm Phone Myat Paing, a junior full-stack developer with a B.Sc. in IT (Software Engineering) from Stamford.
           After a five-month internship at Bangkok Glass building React and TypeScript pages on ASP.NET Core APIs,
-          I'm looking for an entry-level full-stack, .NET or React role.
+          I built and deployed a Laravel app on Ubuntu with Nginx and MySQL. I'm looking for an entry-level full-stack, Laravel, .NET or React role.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3">
           <a href={resume} download="Phone_Myat_Paing_Resume.pdf" className={primary}>
@@ -304,7 +304,7 @@ function Contact() {
   return (
     <Section id="contact" title="Let's talk about a role">
       <p className="max-w-[56ch] text-lg leading-relaxed text-mute">
-        I'm open to junior full-stack, .NET and React developer roles in Bangkok and can start immediately.
+        I'm open to junior full-stack, Laravel, .NET and React developer roles in Bangkok and can start immediately.
         Email is the fastest way to reach me; I'm also on WhatsApp and LINE at {links.phone}.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
