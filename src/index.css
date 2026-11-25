@@ -8,33 +8,56 @@
   --color-line: var(--line);
   --color-accent: var(--accent);
   --color-ok: var(--ok);
-  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 :root {
-  --paper: #f5f6f9; --panel: #ffffff; --ink: #0f1a2e; --mute: #55627a;
-  --line: #dde2ea; --accent: #2243d6; --ok: #0b8a46;
+  --paper: #f5f6fa; --panel: #ffffff; --ink: #0d1424; --mute: #566177;
+  --line: #e0e4ec; --accent: #2f4bff; --ok: #0b8a46;
   color-scheme: light;
 }
 :root[data-theme="dark"] {
-  --paper: #0c121d; --panel: #131b2a; --ink: #eaf0fa; --mute: #9aa8c0;
-  --line: #243047; --accent: #86a2ff; --ok: #3dd68c;
+  --paper: #090d16; --panel: #101725; --ink: #e8edf7; --mute: #97a4bc;
+  --line: #1f2a40; --accent: #8ca2ff; --ok: #3dd68c;
   color-scheme: dark;
 }
 
 html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
-body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
 ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
+/* Faint engineering grid behind the hero, fading out downward. */
+.hero-grid {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 80% at 50% 0%, #000 30%, transparent 75%);
+  opacity: 0.55;
+}
+
 /* The one orchestrated moment: the API response prints line by line on load. */
-.line-in { opacity: 0; animation: line-in 0.4s ease-out forwards; animation-delay: calc(var(--i) * 130ms + 350ms); }
+.line-in { opacity: 0; animation: line-in 0.4s ease-out forwards; animation-delay: calc(var(--i) * 110ms + 350ms); }
 @keyframes line-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
 .status-in { opacity: 0; animation: line-in 0.4s ease-out 0.15s forwards; }
+.caret { animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Scroll reveal and hero entrance */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s cubic-bezier(.2,.7,.2,1) var(--d, 0ms), transform 0.7s cubic-bezier(.2,.7,.2,1) var(--d, 0ms); }
+.reveal.in { opacity: 1; transform: none; }
+.rise { opacity: 0; animation: rise 0.7s cubic-bezier(.2,.7,.2,1) forwards; animation-delay: calc(var(--i) * 90ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+/* Smooth light/dark switch, applied only while toggling */
+html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after { transition: background-color 0.35s, border-color 0.35s, color 0.35s !important; }
 
 @media (prefers-reduced-motion: reduce) {
+  .reveal, .rise { opacity: 1; transform: none; transition: none; animation: none; }
+  html.theme-anim * { transition: none !important; }
   html { scroll-behavior: auto; }
   .line-in, .status-in { opacity: 1; animation: none; }
+  .caret { animation: none; }
 }

@@ -16,7 +16,7 @@ export const candidate = {
   stack: ["Laravel", "React", "TypeScript", "ASP.NET Core", "MySQL", "SQL Server"],
   education: "B.Sc. IT (Software Engineering)",
   languages: ["English (fluent)", "Burmese (native)"],
-  seeking: ["Junior full-stack", "Laravel", ".NET", "React"],
+  seeking: ["Full-stack", "Laravel", ".NET", "React"],
   visa: "Open to Non-B visa sponsorship",
   availability: "Immediately",
 };
@@ -37,6 +37,7 @@ export const projects = [
       "Deployed to Ubuntu 24.04 (WSL2) with Nginx, PHP-FPM and MySQL: server block, production .env, file permissions, a dedicated MySQL user and a Git-based deploy script",
     ],
     tags: ["Laravel 12", "PHP 8.3", "MySQL", "Bootstrap", "Nginx", "Linux"],
+    flow: ["Browser","Nginx","PHP-FPM + Laravel 12","MySQL"],
     code: "https://github.com/PhPaing/laravel-ticket-tracker",
   },
   {
@@ -48,6 +49,7 @@ export const projects = [
       "React front end with search, genre filter, sorting, server-side pagination, personal lists with ratings and notes, and a top-genres stats chart",
     ],
     tags: ["ASP.NET Core", "C#", "SQL Server", "EF Core", "React.js", "JWT"],
+    flow: ["React client","ASP.NET Core API (JWT)","EF Core","SQL Server"],
     code: "https://github.com/PhPaing/Movie-Tracker",
   },
   {
@@ -59,6 +61,7 @@ export const projects = [
       "State managed with React Context, data persisted in local storage, deployed on Netlify",
     ],
     tags: ["React.js", "TypeScript", "Vite", "Tailwind CSS", "Context API"],
+    flow: ["React + Context","Local storage","Netlify"],
     code: "https://github.com/PhPaing/repairqueue",
     live: "https://repairqueue.netlify.app",
   },
@@ -71,6 +74,7 @@ export const projects = [
       "YouTube API and Football Data API for dynamic video and match data",
     ],
     tags: ["React.js", "TypeScript", "Tailwind CSS", "REST APIs"],
+    flow: ["React + TypeScript","ASP.NET Core REST","YouTube + Football Data APIs"],
     code: "https://github.com/PhPaing/bg-pathum-united-website",
     live: "https://bg-pathum-united-website.vercel.app",
   },
